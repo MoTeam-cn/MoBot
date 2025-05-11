@@ -1,0 +1,102 @@
+name: Release
+
+on:
+  push:
+    branches: [ main ]
+    # 只有当提交信息包含 [build] 时才触发
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.head_commit.message, '[build]')"
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Get latest tag
+      id: get_latest_tag
+      run: |
+        # 获取最新标签，如果没有则设置为 v1.0.0
+        git fetch --tags
+        LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+        if [ -z "$LATEST_TAG" ]; then
+          LATEST_TAG="v1.0.0"
+        else
+          # 将版本号加1
+          MAJOR=$(echo $LATEST_TAG | cut -d. -f1)
+          MINOR=$(echo $LATEST_TAG | cut -d. -f2)
+          PATCH=$(echo $LATEST_TAG | cut -d. -f3)
+          PATCH=$((PATCH + 1))
+          LATEST_TAG="${MAJOR}.${MINOR}.${PATCH}"
+        fi
+        echo "NEW_VERSION=$LATEST_TAG" >> $GITHUB_ENV
+        echo "RELEASE_NAME=MoBot-$LATEST_TAG" >> $GITHUB_ENV
+
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # 获取上一个版本到现在的所有提交
+        PREV_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+        if [ -z "$PREV_TAG" ]; then
+          LOG=$(git log --pretty=format:"- %s" --reverse)
+        else
+          LOG=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s" --reverse)
+        fi
+        
+        # 转换提交信息前缀为图标
+        LOG=$(echo "$LOG" | sed -e 's/^- feat:/- ✨ feat:/g' \
+                               -e 's/^- fix:/- 🐛 fix:/g' \
+                               -e 's/^- docs:/- 📝 docs:/g' \
+                               -e 's/^- style:/- 💄 style:/g' \
+                               -e 's/^- refactor:/- ♻️ refactor:/g' \
+                               -e 's/^- perf:/- ⚡️ perf:/g' \
+                               -e 's/^- test:/- ✅ test:/g' \
+                               -e 's/^- build:/- 📦 build:/g' \
+                               -e 's/^- ci:/- 👷 ci:/g' \
+                               -e 's/^- chore:/- 🔧 chore:/g')
+        
+        # 将更新日志保存到文件
+        echo "$LOG" > changelog.txt
+        
+        # 对更新内容进行分类
+        echo "### ✨ 新功能" > release_notes.md
+        echo "$LOG" | grep "✨ feat:" >> release_notes.md || true
+        echo -e "\n### 🐛 修复" >> release_notes.md
+        echo "$LOG" | grep "🐛 fix:" >> release_notes.md || true
+        echo -e "\n### 📝 文档" >> release_notes.md
+        echo "$LOG" | grep "📝 docs:" >> release_notes.md || true
+        echo -e "\n### ♻️ 重构" >> release_notes.md
+        echo "$LOG" | grep "♻️ refactor:" >> release_notes.md || true
+        echo -e "\n### ⚡️ 性能优化" >> release_notes.md
+        echo "$LOG" | grep "⚡️ perf:" >> release_notes.md || true
+        echo -e "\n### 🔧 其他更新" >> release_notes.md
+        echo "$LOG" | grep -v "✨\|🐛\|📝\|♻️\|⚡️" >> release_notes.md || true
+
+    - name: Create Git tag
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a ${{ env.NEW_VERSION }} -m "Release ${{ env.NEW_VERSION }}"
+        git push origin ${{ env.NEW_VERSION }}
+
+    - name: Create Release ZIP
+      run: |
+        zip -r ${{ env.RELEASE_NAME }}.zip . -x "*.git*" "*.github*" "*.gitignore" "*.DS_Store"
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.NEW_VERSION }}
+        files: ${{ env.RELEASE_NAME }}.zip
+        draft: false
+        prerelease: false
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: Release ${{ env.NEW_VERSION }}
+        body_path: release_notes.md 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景圆 -->
+    <circle cx="100" cy="100" r="90" fill="#2AABEE"/>
+    
+    <!-- 机器人主体 -->
+    <g transform="translate(50, 40)">
+        <!-- 头部 -->
+        <rect x="15" y="10" width="70" height="60" rx="10" fill="#FFFFFF"/>
+        
+        <!-- 天线 -->
+        <rect x="45" y="0" width="10" height="15" fill="#FFFFFF"/>
+        <circle cx="50" cy="0" r="5" fill="#FFFFFF"/>
+        
+        <!-- 眼睛 -->
+        <circle cx="35" cy="30" r="8" fill="#2AABEE"/>
+        <circle cx="65" cy="30" r="8" fill="#2AABEE"/>
+        <circle cx="35" cy="30" r="3" fill="#FFFFFF"/>
+        <circle cx="65" cy="30" r="3" fill="#FFFFFF"/>
+        
+        <!-- 嘴巴 -->
+        <rect x="30" y="45" width="40" height="15" rx="5" fill="#2AABEE"/>
+        <rect x="35" y="50" width="30" height="5" fill="#FFFFFF"/>
+        
+        <!-- 身体 -->
+        <rect x="25" y="75" width="50" height="40" rx="5" fill="#FFFFFF"/>
+        
+        <!-- 手臂 -->
+        <rect x="0" y="80" width="20" height="10" rx="5" fill="#FFFFFF"/>
+        <rect x="80" y="80" width="20" height="10" rx="5" fill="#FFFFFF"/>
+        
+        <!-- 腿部 -->
+        <rect x="30" y="120" width="15" height="20" rx="5" fill="#FFFFFF"/>
+        <rect x="55" y="120" width="15" height="20" rx="5" fill="#FFFFFF"/>
+    </g>
+    
+    <!-- MoBot文字 (右下角) -->
+    <text x="160" y="180" 
+          font-family="Arial, sans-serif" 
+          font-size="16" 
+          font-weight="bold" 
+          fill="#FFFFFF" 
+          text-anchor="end">
+        MoBot
+    </text>
+</svg>
