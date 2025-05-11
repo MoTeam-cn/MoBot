@@ -10,7 +10,7 @@ from github import Github
 from packaging import version
 
 # 当前版本号
-CURRENT_VERSION = "v1.0.0"
+CURRENT_VERSION = "v1.0.1"
 GITHUB_REPO = "MoTeam-cn/Telegram-Bot"  # 替换为实际的GitHub仓库名
 
 logger = setup_logger()
