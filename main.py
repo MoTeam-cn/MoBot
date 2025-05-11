@@ -6,6 +6,12 @@ from handlers.command_loader import setup_commands
 import platform
 from httpx import Proxy, Limits
 import signal
+from github import Github
+from packaging import version
+
+# 当前版本号
+CURRENT_VERSION = "v1.0.0"
+GITHUB_REPO = "MoTeam-cn/Telegram-Bot"  # 替换为实际的GitHub仓库名
 
 logger = setup_logger()
 
@@ -13,6 +19,24 @@ class TelegramBot:
     def __init__(self):
         self.application = None
         self._stop_event = None
+    
+    async def check_version(self):
+        """检查GitHub上的最新版本"""
+        try:
+            logger.info("🔍 正在检查最新版本...")
+            g = Github()
+            repo = g.get_repo(GITHUB_REPO)
+            latest_release = repo.get_latest_release()
+            latest_version = latest_release.tag_name
+            
+            if version.parse(latest_version.lstrip('v')) > version.parse(CURRENT_VERSION.lstrip('v')):
+                logger.info(f"📢 发现新版本: {latest_version} (当前版本: {CURRENT_VERSION})")
+                logger.info(f"📝 更新说明: {latest_release.body}")
+                logger.info(f"🔗 下载地址: {latest_release.html_url}")
+            else:
+                logger.info(f"✅ 当前已是最新版本: {CURRENT_VERSION}")
+        except Exception as e:
+            logger.warning(f"⚠️ 版本检查失败: {str(e)}")
     
     def _signal_handler(self):
         """处理停止信号"""
@@ -24,6 +48,9 @@ class TelegramBot:
         """启动机器人"""
         try:
             logger.info("🚀 开始启动机器人...")
+            
+            # 检查版本
+            await self.check_version()
             
             # 代理状态日志
             if PROXY_ENABLED:

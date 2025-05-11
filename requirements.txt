@@ -3,3 +3,5 @@ python-dotenv==1.0.0
 colorama==0.4.6
 httpx[socks] 
 aiohttp==3.8.1 
+PyGithub==2.1.1
+packaging==23.2 

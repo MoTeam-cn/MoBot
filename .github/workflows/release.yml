@@ -3,12 +3,9 @@ name: Release
 on:
   push:
     branches: [ main ]
-    # 只有当提交信息包含 [build] 时才触发
     paths-ignore:
       - '**.md'
       - 'docs/**'
-    tags:
-      - 'v*'
 
 jobs:
   build:
@@ -27,17 +24,17 @@ jobs:
         git fetch --tags
         LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
         if [ -z "$LATEST_TAG" ]; then
-          LATEST_TAG="v1.0.0"
+          NEW_TAG="v1.0.0"
         else
           # 将版本号加1
           MAJOR=$(echo $LATEST_TAG | cut -d. -f1)
           MINOR=$(echo $LATEST_TAG | cut -d. -f2)
           PATCH=$(echo $LATEST_TAG | cut -d. -f3)
           PATCH=$((PATCH + 1))
-          LATEST_TAG="${MAJOR}.${MINOR}.${PATCH}"
+          NEW_TAG="${MAJOR}.${MINOR}.${PATCH}"
         fi
-        echo "NEW_VERSION=$LATEST_TAG" >> $GITHUB_ENV
-        echo "RELEASE_NAME=MoBot-$LATEST_TAG" >> $GITHUB_ENV
+        echo "NEW_VERSION=$NEW_TAG" >> $GITHUB_ENV
+        echo "RELEASE_NAME=MoBot-$NEW_TAG" >> $GITHUB_ENV
 
     - name: Generate changelog
       id: changelog
