@@ -1,0 +1,48 @@
+{
+  "name": "tg-guard-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Telegram 群管机器人：关键词过滤 + 入群验证（按钮/图像/网页JS）+ 群管理，Node.js + TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "verify": "npm run typecheck && npm test",
+    "build:watch": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "start:watch": "node --watch dist/index.js"
+  },
+  "engines": {
+    "node": ">=20.10"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "grammy": "^1.46.0",
+    "undici": "^8.12.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "grammy",
+    "moderation",
+    "keyword-filter",
+    "captcha",
+    "verification",
+    "typescript"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MoTeam-cn/MoBot.git"
+  },
+  "homepage": "https://github.com/MoTeam-cn/MoBot"
+}
